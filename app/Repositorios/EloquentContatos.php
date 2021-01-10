@@ -7,6 +7,7 @@ use App\Models\Contato;
 use App\Models\Email;
 use App\Models\Endereco;
 use App\Models\Telefone;
+use Carbon\Carbon;
 use stdClass;
 
 class EloquentContatos implements ContatosRepositorio
@@ -26,14 +27,14 @@ class EloquentContatos implements ContatosRepositorio
         $this->celular = $celular;
         $this->email = $email;
         $this->endereco = $endereco;
-
+         
 
      }
 
  
-    public function recuperarContatos(){
+    public function recuperarContatos($nomePesquisa){
 
-        return $this->contato::with('telefones')->with('celulares')->with('emails')->with('enderecos')->get();
+        return $this->contato::with('telefones')->with('celulares')->with('emails')->with('enderecos')->where("nome", "like", "%" . $nomePesquisa . "%")->get();
 
 
     }
@@ -41,14 +42,13 @@ class EloquentContatos implements ContatosRepositorio
     public function adicionarContato($atributos){
 
 
-        $contato = new stdClass;
-        $contato->nome = $atributos["nome"];
-
         $contato_db = new Contato();
 
-        $contato_db->nome = $contato->nome;
-
+        $contato_db->nome = $atributos["nome"];
+        $contato_db->created_at = Carbon::now();
+        $contato_db->updated_at = Carbon::now();
         $contato_db->save();
+        
 
         $endereco = new Endereco();
 
@@ -90,8 +90,6 @@ class EloquentContatos implements ContatosRepositorio
         }
 
 
-
-
     }
      
     public function recuperarContato($id){
@@ -101,6 +99,7 @@ class EloquentContatos implements ContatosRepositorio
 
     }
 
+    //deleta o contato junto com as informações relacionadas
     public function removerContato($id){
 
         $contato = $this->contato::find($id);
@@ -114,8 +113,11 @@ class EloquentContatos implements ContatosRepositorio
 
     }
 
+    //deleta o contato junto com as informações relacionadas
     public function atualizarContato($id, $atributos){
 
+      //para facilitar a implementação, todos as informações relacionadas ao contato
+      //são deletadas (telefone, celular...) e recriadas na atualização
 
         $contato = Contato::find($id);
         $this->telefone::where('id_contato', $id)->delete();
@@ -123,12 +125,12 @@ class EloquentContatos implements ContatosRepositorio
         $this->email::where('id_contato', $id)->delete();
         $this->endereco::where('id_contato', $id)->delete();
 
-        
-
-
+      
         $contato_db =  $this->contato::find($id);
 
         $contato_db->nome = $atributos["nome"];
+        $contato_db->updated_at = Carbon::now();
+
 
         $contato_db->save();
 
@@ -151,8 +153,6 @@ class EloquentContatos implements ContatosRepositorio
             $telefone->save();
 
          }
-
-       
 
 
          for($i = 0; $i <  count($atributos["celulares"]); $i++){

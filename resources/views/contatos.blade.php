@@ -1,51 +1,102 @@
 @extends("main")
 
 @section("corpo")
-
-<div class="p-4 bg-primary d-none d-sm-block">
-    <div>
-        <a class="btn btn-success" href="/criar-contato">Adicionar Novo Contato</a>
+<div>
+    <div class="p-4 bg-primary d-none d-sm-block">
+        <div>
+            <a class="btn btn-success" href="/criar-contato">Adicionar Novo Contato</a>
+        </div>
     </div>
-</div>
 
-<div class="row">
-    <div class="col-md-4 col-1"></div>
-    <div class="col-md-4 col-10">
 
-        <div id="contatos"> <!-- os contatos são exibidos aqui -->
+    <div class="d-block d-sm-none d-md-none d-lg-none text-center bg-primary">
+        <span style="font-size:30px;color:white;">Contatos</span>
+    </div>
+    <div>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12 col-md-5">
+                    <div class="mb-2 bg-primary d-block">
+                        <div class="input-group p-2 bg-light">
+                            <input id="nome" placeholder="digite um nome para pesquisar" class="form-control form-control-sm">
+
+                            <div class="input-group-append">
+                                <button onclick="pesquisarContatos()" class="btn btn-primary btn-sm" type="button"><span class="d-block d-sm-none d-md-none d-lg-none"><i class="fas fa-search"></i></span><span class="container-fluid d-none d-sm-block">buscar</span></button>
+                            </div>
+                        </div>
+                        <div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container-fluid d-none d-sm-block">
+                <div id="contatos" class="row">
+                </div>
+            </div>
+            <div class="container-fluid">
+                <div id="contatosXS" class="d-block d-sm-none d-md-none d-lg-none">
+
+                </div>
+            </div>
+
+
+
+
         </div>
 
-    </div>
-    <div class="col-md-4 col-1"></div>
-</div>
+        <div style="position:fixed; right:20px; bottom:20px" class="d-block d-sm-none d-md-none d-lg-none">
+            <a href="/criar-contato"> <button class="botaoCircular"> <i style="font-size:40px; color:white;" class="fas fa-user-plus"></i> </button> </a>
+        </div>
+        @section("scriptsPagina")
+
+        <script>
+          
+            //Após a página estar pronta, todos os contatos são retornados
+            $(document).ready(function() {
+
+                recuperarContatos(""); //passando uma string vazia todos os contatos são retornados
+
+            });
 
 
-<div style="position:fixed; background-color:white; right:5px; bottom:5px" class="d-md-none">
-  <a href="/criar-contato"> <img class="rounded-circle; " style="width:50px;"   src="https://lh3.googleusercontent.com/proxy/M9zt7xlHrFViXais1HQM-LrFIOzYVjaOaqmuuXJu6Kn-K8NJFMvxDot-AQu2dbfk9MMLlapLsYxVaQo5PgcNn2wVlqpCghY"> </a>
-</div>
+            function pesquisarContatos() {
 
-@section("scriptsPagina")
+                let nome = $('#nome').val();
 
-<script>
-    $(document).ready(function() { //recupera os contatos via API
-
-        $.ajax({
-            url: urlBackend + 'contatos'
-            , method: 'GET'
-            , success: function(data) {
-
-                for (let i = 0; i < data.length; i++) {
-
-                    $('#contatos').append(`<a href="/detalhes-contato?id=${data[i].id}"> <div class="row bg-light pb-2 align-center-content"><div class="col-md-2 col-2"><img class="img-fluid rounded-circle" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQd22iP4PpHmLceusDiDDk2hiyUis379soeNA&usqp=CAU"> </div> <div class="col-md-10 col-10 text-center pt-2">${data[i].nome}</div>  </div></a>`);
-
-                }
+                recuperarContatos(nome)
 
             }
-        });
 
-    });
+            function recuperarContatos(nome) {
 
-</script>
-@stop
+               //remove os contatos da tela antes de pesquisar
+                $('#contatosXS').empty(); 
+                $('#contatos').empty();
 
-@stop
+                $.ajax({
+                    url: urlBackendAPI + 'contatos?nomePesquisa=' + nome
+                    , method: 'GET'
+                    , success: function(data) {
+
+                        if (data.length == 0) {
+
+                            $('#contatos').text("Nehum resultado");
+                            $('#contatosXS').text("Nehum resultado");
+
+                        }
+
+                        for (let i = 0; i < data.length; i++) {
+
+                            $("#contatos").append(`<div class="col-md-3"><a href="detalhes-contato?id=${data[i].id}"><div class="row align-items-center"><div class="col-md-4"><img class="img-fluid rounded-circle" src="/contato_avatar.png"></div><div class="col-md-8">${data[i].nome}</div></div></a></div>`);
+                            $('#contatosXS').append(`<a href="/detalhes-contato?id=${data[i].id}"> <div class="row bg-light pb-2 align-items-content"><div class="col-md-2 col-2"><img class="img-fluid rounded-circle" src="/contato_avatar.png"> </div> <div class="col-md-10 col-10 pt-2">${data[i].nome}</div>  </div></a>`);
+
+                        }
+                    }
+                });
+            }
+
+        </script>
+        @stop
+
+        @stop

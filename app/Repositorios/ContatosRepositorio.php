@@ -5,7 +5,7 @@ namespace App\Repositorios;
 
 interface ContatosRepositorio
 {
-    public function recuperarContatos();
+    public function recuperarContatos($nomepesquisa);
 
     public function adicionarContato($atributos);
      

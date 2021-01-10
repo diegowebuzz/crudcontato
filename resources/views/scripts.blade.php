@@ -5,7 +5,8 @@
 
 <script>
 
-  var urlBackend = 'http://127.0.0.1:8000/api/'; //as chamadas ajax utilizam essa variável
+  var urlBackendAPI = 'http://192.168.0.104:8000/api/'; //as chamadas ajax utilizam essa variável
+  var urlBackend = 'http://192.168.0.104:8000/';
 
  function autocompletarEndereco(){
 

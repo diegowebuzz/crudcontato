@@ -7,19 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class Contato extends Model
 {
-
+    protected $fillable = array('nome', 'created_at', 'updated_at');
     protected $table = 'contato';
-    public $timestamps = false;
     //protected $hidden = ['id'];
 
-
-    protected $fillable = array('nome');
-
+    
     public function telefones()
     {
         return $this->hasMany(Telefone::class, 'id_contato', 'id');
     }
-
     public function celulares()
     {
         return $this->hasMany(Celular::class, 'id_contato', 'id');

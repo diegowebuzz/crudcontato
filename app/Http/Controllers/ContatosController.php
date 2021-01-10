@@ -28,10 +28,11 @@ class ContatosController extends BaseController
 
      }
 
-        function recuperarContatos(){
+        function recuperarContatos(Request $request){
             
-
-         return $this->contatoRepositorio->recuperarContatos();
+         $nomePesquisa = $request->nomePesquisa;
+              
+         return $this->contatoRepositorio->recuperarContatos($nomePesquisa);
 
       }
 
